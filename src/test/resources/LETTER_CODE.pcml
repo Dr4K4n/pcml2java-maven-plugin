@@ -1,0 +1,25 @@
+<pcml version="4.0">
+    <struct name="LETTER_CODE">
+        <data length="8" name="ID" precision="63" type="int" usage="inherit"/>
+        <data length="128" name="NAME" type="char" usage="inherit"/>
+        <data length="255" name="BESCHREIBUNG" type="char" usage="inherit"/>
+        <data length="3" name="LETTER_CODE" type="char" usage="inherit"/>
+        <data length="8" name="CONTRY_ID" precision="63" type="int" usage="inherit"/>
+        <data length="8" name="AREA_ID" precision="63" type="int" usage="inherit"/>
+        <data length="3" name="LAND" type="char" usage="inherit"/>
+        <data length="128" name="AREA_INFO_1" type="char" usage="inherit"/>
+        <data length="128" name="AREA_INFO_2" type="char" usage="inherit"/>
+        <data length="255" name="AREA_INFO_3" type="char" usage="inherit"/>
+        <data length="8" name="AIRPORT_ID" precision="63" type="int" usage="inherit"/>
+        <data length="128" name="AIRPORT" type="char" usage="inherit"/>
+        <data length="128" name="FLUGHAFEN" type="char" usage="inherit"/>
+        <data length="255" name="FLUGHAFEN_BESCHREIBUNG" type="char" usage="inherit"/>
+        <data length="10" name="SAISON_START" type="char" usage="inherit"/>
+        <data length="10" name="SAISON_ENDE" type="char" usage="inherit"/>
+        <data length="1" name="SAISON" type="char" usage="inherit"/>
+        <data length="128" name="AUFENTHALTS_BEGINN" type="char" usage="inherit"/>
+    </struct>
+    <program name="LETTER_CODE_SERVICE" parseorder="DATA" path="/QSYS.LIB/TWIMBEE.LIB/LETTER_CODE.PGM" threadsafe="false">
+        <data count="999" name="DATA" struct="LETTER_CODE" type="struct" usage="output"/>
+    </program>
+</pcml>
