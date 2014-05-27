@@ -17,6 +17,8 @@ Include following plugin-block in the pom.xml of your project. Define a sourceFo
 			<configuration>
 				<sourceFolder>src/main/resources</sourceFolder>
 				<packageName>de.stefanerichsen.pcmlbeans</packageName>
+				<generateConstants>true</generateConstants>
+				<beanValidation>true</beanValidation>
 			</configuration>
 			<executions>
 				<execution>
