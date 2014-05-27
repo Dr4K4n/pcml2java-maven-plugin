@@ -10,14 +10,18 @@ import java.net.URLClassLoader;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
+import com.sun.codemodel.JAnnotationUse;
 import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
@@ -29,6 +33,16 @@ import com.sun.codemodel.JMod;
 public class PCML2Java {
 
     private static final String GENERATED_SOURCES_DIR = "target/generated-sources";
+
+    private static final List<Class<?>> sizeAnnotationTypes = new ArrayList<>();
+    static {
+        sizeAnnotationTypes.add(CharSequence.class);
+        sizeAnnotationTypes.add(Collection.class);
+        sizeAnnotationTypes.add(Map.class);
+    }
+
+    private boolean generateConstants;
+    private boolean beanValidation;
 
     public void createJavaClassesForPCMLFiles(String packageName, String sourceDirectory) {
         try {
@@ -77,25 +91,53 @@ public class PCML2Java {
         JDefinedClass myClass = codeModel._class(packageName + "." + className);
 
         List<Element> children = struct.getChildren("data");
-        for (Element dataField : children) {
+        // First generate the constants
+        if (this.generateConstants) {
+            for (Element dataField : children) {
+                String nameRpg = dataField.getAttributeValue("name");
+                String name = toCamelCase(nameRpg);
 
+                JFieldVar constant = myClass.field(JMod.STATIC + JMod.PUBLIC + JMod.FINAL, String.class, nameRpg);
+                constant.init(JExpr.lit(name));
+            }
+        }
+
+        // Then generate the fields
+        for (Element dataField : children) {
             String nameRpg = dataField.getAttributeValue("name");
+            String name = toCamelCase(nameRpg);
 
             Class<?> fieldType = mapToJavaType(dataField.getAttributeValue("type"),
                     dataField.getAttributeValue("length"), dataField.getAttributeValue("precision"));
-            String name = toCamelCase(nameRpg);
             JFieldVar field = myClass.field(JMod.PRIVATE, fieldType, name);
+
+            // @javax.validation.constraints.Size(min = 3, max = 3)
+            if (beanValidation && isSizeAnnotationSupported(fieldType)) {
+                JAnnotationUse sizeValidationAnnotation = field.annotate(javax.validation.constraints.Size.class);
+                sizeValidationAnnotation.param("max", dataField.getAttributeValue("length"));
+            }
+
             String capitalName = toCamelCase(name, true);
             String getterName = "get" + capitalName;
-            String setterName = "set" + capitalName;
             JMethod getter = myClass.method(JMod.PUBLIC, fieldType, getterName);
             getter.body()._return(field);
+
+            String setterName = "set" + capitalName;
             JMethod setter = myClass.method(JMod.PUBLIC, void.class, setterName);
             setter.param(fieldType, name);
             setter.body().assign(JExpr._this().ref(name), JExpr.ref(name));
         }
 
         codeModel.build(destDir);
+    }
+
+    private static boolean isSizeAnnotationSupported(Class<?> fieldType) {
+        for (Class<?> c : sizeAnnotationTypes) {
+            if (c.isAssignableFrom(fieldType)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -308,4 +350,13 @@ public class PCML2Java {
         }
         return result;
     }
+
+    public void setGenerateConstants(boolean generateConstants) {
+        this.generateConstants = generateConstants;
+    }
+
+    public void setBeanValidation(boolean beanValidation) {
+        this.beanValidation = beanValidation;
+    }
+
 }

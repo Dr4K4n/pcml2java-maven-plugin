@@ -22,6 +22,10 @@ public class PCML2JavaTest {
     @Test
     public void testCreateJavaClassesForPCMLFiles() {
         PCML2Java beanGenerator = new PCML2Java();
+
+        beanGenerator.setBeanValidation(true);
+        beanGenerator.setGenerateConstants(true);
+
         String packageName = "de.twimbee.test";
         String sourceFolder = "src";
         beanGenerator.createJavaClassesForPCMLFiles(packageName, sourceFolder);

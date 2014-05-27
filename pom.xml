@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.twimbee</groupId>
 	<artifactId>pcml2java-maven-plugin</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 	<description>Generates Java classes from IBM® .PCML-Files (Program Call Markup Language) t</description>
 
@@ -59,6 +59,11 @@
 			<artifactId>maven-plugin-annotations</artifactId>
 			<version>3.3</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<version>1.1.0.Final</version>
 		</dependency>
 	</dependencies>
 

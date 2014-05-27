@@ -28,12 +28,34 @@ public class PCML2JavaGenerate extends AbstractMojo {
      */
     private String sourceFolder;
 
+    /**
+     * Should we generate constants for each field?
+     * 
+     * @parameter
+     */
+    private boolean generateConstants;
+
+    /**
+     * automatically generate @Size(max=?) for each field.
+     * 
+     * @parameter
+     */
+    private boolean beanValidation;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         PCML2Java pcml2Java = new PCML2Java();
-        getLog().error("generating for " + packageName + " from " + sourceFolder);
+        pcml2Java.setGenerateConstants(generateConstants);
+        pcml2Java.setBeanValidation(beanValidation);
+
+        getLog().info("generating for " + packageName + " from " + sourceFolder);
+        if (generateConstants) {
+            getLog().info("generating constants for all fields");
+        }
+        if (beanValidation) {
+            getLog().info("annotating supported fields with @Size(max=?) Bean-Validation");
+        }
         pcml2Java.createJavaClassesForPCMLFiles(packageName, sourceFolder);
     }
-
 }
